@@ -1,0 +1,36 @@
+[workspace]
+name = "hydrogen-thermodynamics-study"
+description = "Studies of hydrogen thermodynamics"
+channels = ["conda-forge"]
+platforms = ["linux-64", "osx-arm64", "win-64"]
+
+[dependencies]
+ruff = "*"
+pre-commit = "*"
+ipython = "*"
+jupyterlab = "*"
+matplotlib = "*"
+jupytext = "*"
+pandas = "*"
+numpy = "*"
+scipy = "*"
+neqsim = "*"
+coolprop = "*"
+thermo = "*"
+
+[pypi-dependencies]
+thermopack = "*"
+
+[target.unix.activation.env]
+HYDROGEN_PROJECT_ROOT = "$PIXI_PROJECT_ROOT"
+HYDROGEN_MODELS_PATH = "$PIXI_PROJECT_ROOT/src/models"
+HYDROGEN_FIGURES_PATH = "$PIXI_PROJECT_ROOT/figures"
+HYDROGEN_SRC_PATH = "$PIXI_PROJECT_ROOT/src"
+
+[tasks]
+precommit = "pre-commit run --all-files"
+notebooks-smoke = "python -c 'from pathlib import Path; n=sorted(Path(\"notebooks\").rglob(\"*.ipynb\")); print(len(n), [str(p.relative_to(Path(\"notebooks\"))) for p in n])'"
+notebooks-sync = "python scripts/sync_notebooks.py"
+precommit-sync = "python scripts/sync_notebooks.py && pre-commit run --all-files"
+main = "python main.py"
+register-kernel = "python -m ipykernel install --user --name hydrogen-props --display-name 'Hydrogen Thermo'"
