@@ -1,95 +1,143 @@
-from src.models.coolprop_model import calculate_Z, calculate_density, calculate_viscosity
+# coolprop
+from src.models.coolprop_model import (
+    calculate_Z as Z_cp,
+    calculate_density as rho_cp_func,
+    calculate_viscosity as mu_cp
+)
 
-from src.plots.plot_z import plot_Z_vs_pressure, plot_Z_vs_temperature
-from src.plots.plot_density import plot_density_vs_pressure, plot_density_vs_temperature, plot_density_vs_Z 
-from src.plots.plot_viscosity import plot_viscosity_vs_pressure, plot_viscosity_vs_temperature
+# thermo
+from src.models.thermo_model import (
+    calculate_Z as Z_th,
+    calculate_density as rho_th_func,
+    calculate_viscosity as mu_th
+)
 
-from src.models.thermo_model import calculate_density as density_thermo
-from src.models.thermo_model import calculate_Z as Z_thermo
-from src.models.thermo_model import calculate_viscosity as mu_thermo
+# thermo PR
+from src.models.thermo_pr_model import (
+    calculate_Z as Z_pr,
+    calculate_density as rho_pr_func
+)
+
+# """
+# thermopack
+from src.models.thermopack_model import (
+    calculate_Z as Z_tp,
+    density_via_Z as rho_tp_func,
+    density_via_volume,
+    density_relative_error,
+    density_difference
+)
+# """
+
+# neqsim
+from src.models.neqsim_model import (
+    calculate_Z as z_neq,
+    calculate_density as rho_neq,
+    calculate_viscosity as mu_neq
+)
+
+# plots
+from src.plots.plot_z import (
+    plot_Z_vs_pressure, 
+    plot_Z_vs_temperature, 
+    plot_Z_vs_pressure_comparison, 
+    plot_Z_vs_temperature_comparison,)
+from src.plots.plot_density import (
+    plot_density_vs_pressure, 
+    plot_density_vs_temperature, 
+    plot_density_vs_Z,
+    plot_density_vs_pressure_comparison,
+    plot_density_vs_temperature_comparison,
+    plot_density_vs_Z_comparison)
+from src.plots.plot_viscosity import (
+    plot_viscosity_vs_pressure, 
+    plot_viscosity_vs_temperature,
+    plot_viscosity_vs_pressure_comparison,
+    plot_viscosity_vs_temperature_comparison )
 
 
-from src.models.thermo_model import calculate_density as density_th
-from src.models.coolprop_model import calculate_density as density_cp
-
-from src.models.thermo_pr_model import calculate_Z as Z_PR
-from src.models.thermo_pr_model import calculate_density as rho_PR
-
-
-from src.models.thermopack_model import calculate_Z as Z_tp 
-from src.models.thermopack_model import density_via_Z as density_tp
-from src.models.thermopack_model import density_relative_error, density_difference,  density_via_volume
 
 
 # parâmetros
 T = 300  # temperatura em K
-P = 10e7  # 100 bar = 10 MPa = 10e7 Pa 
+P = 1e7  # 100 bar = 10 MPa = 1e7 Pa 
 
+# ===================
+# MODELOS ORGANIZADOS
+Z_models = {
+    "CoolProp": Z_cp,
+    "Thermo": Z_th,
+    "Thermo_PR": Z_pr,
+    "Thermopack": Z_tp,
+    # "NeqSim": z_neq
+}
 
-rho_cp = density_cp(P, T)
-rho_th = density_th(P, T)
-rho_tp = density_tp(P, T)
+density_models = {
+    "CoolProp": rho_cp_func,
+    "Thermo": rho_th_func,
+    "Thermo_PR": rho_pr_func,
+    "Thermopack": rho_tp_func,
+    # "NeqSim": rho_neq
+}
+
+viscosity_models = {
+    "CoolProp": mu_cp,
+    "Thermo": mu_th,
+    # "NeqSim": mu_neq
+}
+
+# ===================
 
 print("=== Comparação de densidade ===")
-print("CoolProp: ", rho_cp)
-print("Thermo: ", rho_th)
-print("Thermopack: ", rho_tp)
+
+for name, func in density_models.items():
+    try:
+        value = func(P, T)
+    except Exception:
+        value = float("nan")
+    print(f"{name}: {value}")
 
 # ========
 # plots:
 # ========
 
-# Z vs Pressão (T fixa)
-plot_Z_vs_pressure(calculate_Z, 300, "Hydrogen - CoolProp")  
-plot_Z_vs_pressure(Z_thermo, T, "Hydrogen - Thermo")
-plot_Z_vs_pressure(Z_PR, T, "Hydrogen - Thermo_PR")
-plot_Z_vs_pressure(Z_tp, T, "Hydrogen - Thermopack_PR")
+for name, func in Z_models.items():
+    plot_Z_vs_pressure(func, T, f"Hydrogen - {name}")
+    plot_Z_vs_temperature(func, P, f"Hydrogen - {name}")
+
+for name, func in density_models.items():
+    plot_density_vs_pressure(func, T, f"Hydrogen - {name}")
+    plot_density_vs_temperature(func, P, f"Hydrogen - {name}")
+
+# densidade vs Z (precisa de Z + rho consistentes)
+for name in Z_models.keys():
+    plot_density_vs_Z(
+        density_models[name],
+        Z_models[name],
+        T,
+        f"Hydrogen - {name}"
+    )
+ 
+for name, func in viscosity_models.items():
+    plot_viscosity_vs_pressure(func, T, f"Hydrogen - {name}")
+    plot_viscosity_vs_temperature(func, P, f"Hydrogen - {name}")
 
 
-# Z vs Temperatura (P fixa)
-plot_Z_vs_temperature(calculate_Z, P, "Hydrogen - CoolProp")
-plot_Z_vs_temperature(Z_thermo, P, "Hydrogen - Thermo")
-plot_Z_vs_temperature(Z_PR, P, "Hydrogen - Thermo_PR")
-plot_Z_vs_temperature(Z_tp, P, "Hydrogen - Thermopack_PR")
+# =========================
+# PLOTS COMPARAÇÕES
+plot_Z_vs_pressure_comparison(Z_models, T)
+plot_Z_vs_temperature_comparison(Z_models, P)
+plot_density_vs_pressure_comparison(density_models, T)
+plot_density_vs_temperature_comparison(density_models, P)
+plot_density_vs_Z_comparison(density_models, Z_models, T)
+plot_viscosity_vs_pressure_comparison(viscosity_models, T)
+plot_viscosity_vs_temperature_comparison(viscosity_models, P)
 
-
-
-# densidade vs pressão (T fixa)
-plot_density_vs_pressure(calculate_density, T, "Hydrogen - CoolProp")
-plot_density_vs_pressure(density_thermo, T, "Hydrogen - Thermo")
-plot_density_vs_pressure(rho_PR, T, "Hydrogen - Thermo_PR")
-plot_density_vs_pressure(density_tp, T, "Hydrogen - Thermopack_PR")
-
-
-
-# densidade vs temperatura (P fixa)
-plot_density_vs_temperature(calculate_density, P, "Hydrogen - CoolProp")
-plot_density_vs_temperature(density_thermo, P, "Hydrogen - Thermo")
-plot_density_vs_temperature(rho_PR, P, "Hydrogen - Thermo_PR")
-plot_density_vs_temperature(density_tp, P, "Hydrogen - Thermopack_PR")
-
-
-
-# densidade vs Z (T fixa)
-plot_density_vs_Z(calculate_density, calculate_Z, T, "Hydrogen - CoolProp")
-plot_density_vs_Z(density_thermo, Z_thermo, T, "Hydrogen - Thermo")
-plot_density_vs_Z(rho_PR, Z_PR, T, "Hydrogen - Thermo_PR")
-plot_density_vs_Z(density_tp, Z_tp, T, "Hydrogen - Thermopack_PR")
-
-
-# viscosidade vs pressão (T fixa)
-plot_viscosity_vs_pressure(calculate_viscosity, T, "Hydrogen - CoolProp")
-plot_viscosity_vs_pressure(mu_thermo, T, "Hydrogen - Thermo")
-
-
-# viscosidade vs temperatura (P fixa)
-plot_viscosity_vs_temperature(calculate_viscosity, P, "Hydrogen - CoolProp")
-plot_viscosity_vs_temperature(mu_thermo, P, "Hydrogen - Thermo")
-
-
-"""Comparação de densidade via volume molar e via fator de compressibilidade Z
+"""
 rho_v = density_via_volume(P, T)
-rho_z = density_via_Z(P, T)
+rho_z = rho_tp_func(P, T)
+
+print("=== Thermopack Consistency Check ===")
 print("Densidade via volume:", rho_v)
 print("Densidade via Z:", rho_z)
 print("Diferença absoluta:", density_difference(P, T))
