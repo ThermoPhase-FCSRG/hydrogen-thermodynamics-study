@@ -7,9 +7,10 @@ def plot_Z_vs_pressure(model_function, T, model_name):
     """
     Gráfico Z vs Pressão (T fixa)
     """
-    os.makedirs("figures", exist_ok=True)
+    os.makedirs("figures/Z", exist_ok=True)
 
     pressures = np.linspace(1e5, 2e7, 50)
+    pressures_mpa = pressures / 1e6
     Z_values = []
 
     for P in pressures:
@@ -17,9 +18,8 @@ def plot_Z_vs_pressure(model_function, T, model_name):
         Z_values.append(Z)
 
     plt.figure()
-    plt.plot(pressures, Z_values)
-
-    plt.xlabel("Pressão (Pa)")
+    plt.plot(pressures_mpa, Z_values)
+    plt.xlabel("Pressão (MPa)")
     plt.ylabel("Z")
     plt.title(f"Z vs Pressão - {model_name}")
 
@@ -35,7 +35,7 @@ def plot_Z_vs_temperature(model_function, P, model_name):
     """
     Gráfico Z vs Temperatura (P fixa)
     """
-    os.makedirs("figures", exist_ok=True)
+    os.makedirs("figures/Z", exist_ok=True)
 
     temperatures = np.linspace(200, 500, 50)
     Z_values = []
@@ -66,6 +66,8 @@ def plot_Z_vs_pressure_comparison(models, T):
     os.makedirs("figures/Z", exist_ok=True)
 
     pressures = np.linspace(1e5, 2e7, 100)
+    pressures_mpa = pressures / 1e6
+
 
     plt.figure()
 
@@ -76,9 +78,9 @@ def plot_Z_vs_pressure_comparison(models, T):
             Z = model_function(P, T)
             Z_values.append(Z)
 
-        plt.plot(pressures, Z_values, label=model_name)
+        plt.plot(pressures_mpa, Z_values, label=model_name)
 
-    plt.xlabel("Pressão (Pa)")
+    plt.xlabel("Pressão (MPa)")
     plt.ylabel("Z")
     plt.title(f"Comparação Z vs Pressão (T = {T} K)")
 
@@ -110,7 +112,7 @@ def plot_Z_vs_temperature_comparison(models, P):
 
     plt.xlabel("Temperatura (K)")
     plt.ylabel("Z")
-    plt.title(f"Comparação Z vs Temperatura (P = {P} Pa)")
+    plt.title(f"Comparação Z vs Temperatura (P = {P/1e6} MPa)")
     plt.legend()
     plt.grid()
     plt.savefig("figures/Z/Z_vs_T_comparison.png", dpi=300)

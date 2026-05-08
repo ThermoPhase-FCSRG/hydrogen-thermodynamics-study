@@ -18,7 +18,6 @@ from src.models.thermo_pr_model import (
     calculate_density as rho_pr_func
 )
 
-# """
 # thermopack
 from src.models.thermopack_model import (
     calculate_Z as Z_tp,
@@ -27,7 +26,6 @@ from src.models.thermopack_model import (
     density_relative_error,
     density_difference
 )
-# """
 
 # neqsim
 from src.models.neqsim_model import (
@@ -69,7 +67,7 @@ Z_models = {
     "Thermo": Z_th,
     "Thermo_PR": Z_pr,
     "Thermopack": Z_tp,
-    # "NeqSim": z_neq
+    "NeqSim": z_neq
 }
 
 density_models = {
@@ -77,13 +75,13 @@ density_models = {
     "Thermo": rho_th_func,
     "Thermo_PR": rho_pr_func,
     "Thermopack": rho_tp_func,
-    # "NeqSim": rho_neq
+    "NeqSim": rho_neq
 }
 
 viscosity_models = {
     "CoolProp": mu_cp,
     "Thermo": mu_th,
-    # "NeqSim": mu_neq
+    "NeqSim": mu_neq
 }
 
 # ===================

@@ -8,9 +8,10 @@ def plot_viscosity_vs_pressure(model_function, T, model_name):
     μ vs P (T fixa)
     """
 
-    os.makedirs("figures", exist_ok=True)
+    os.makedirs("figures/viscosity", exist_ok=True)
 
     pressures = np.linspace(1e5, 2e7, 50)
+    pressures_MPa = pressures / 1e6
     viscosities = []
 
     for P in pressures:
@@ -18,9 +19,9 @@ def plot_viscosity_vs_pressure(model_function, T, model_name):
         viscosities.append(mu)
 
     plt.figure()
-    plt.plot(pressures, viscosities)
+    plt.plot(pressures_MPa, viscosities)
 
-    plt.xlabel("Pressão (Pa)")
+    plt.xlabel("Pressão (MPa)")
     plt.ylabel("Viscosidade (Pa·s)")
     plt.title(f"Viscosidade vs Pressão - {model_name}")
 
@@ -37,7 +38,7 @@ def plot_viscosity_vs_temperature(model_function, P, model_name):
     μ vs T (P fixa)
     """
 
-    os.makedirs("figures", exist_ok=True)
+    os.makedirs("figures/viscosity", exist_ok=True)
 
     temperatures = np.linspace(200, 500, 50)
     viscosities = []
@@ -68,6 +69,7 @@ def plot_viscosity_vs_pressure_comparison(models, T):
     os.makedirs("figures/viscosity", exist_ok=True)
 
     pressures = np.linspace(1e5, 2e7, 100)
+    pressures_MPa = pressures / 1e6
 
     plt.figure()
 
@@ -85,13 +87,13 @@ def plot_viscosity_vs_pressure_comparison(models, T):
             viscosities.append(mu)
 
         plt.plot(
-            pressures,
+            pressures_MPa,
             viscosities,
             label=model_name,
             linewidth=2
         )
 
-    plt.xlabel("Pressão (Pa)")
+    plt.xlabel("Pressão (MPa)")
     plt.ylabel("Viscosidade (Pa·s)")
 
     plt.title(

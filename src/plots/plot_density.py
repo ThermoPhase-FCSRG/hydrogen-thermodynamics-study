@@ -8,9 +8,10 @@ def plot_density_vs_pressure(model_function, T, model_name):
     Gráfico densidade vs pressão (T fixa)
     """
 
-    os.makedirs("figures", exist_ok=True)
+    os.makedirs("figures/density", exist_ok=True)
 
     pressures = np.linspace(1e5, 2e7, 50)
+    pressures_MPa = pressures / 1e6
     densities = []
 
     for P in pressures:
@@ -18,9 +19,8 @@ def plot_density_vs_pressure(model_function, T, model_name):
         densities.append(rho)
 
     plt.figure()
-    plt.plot(pressures, densities)
-
-    plt.xlabel("Pressão (Pa)")
+    plt.plot(pressures_MPa, densities)
+    plt.xlabel("Pressão (MPa)")
     plt.ylabel("Densidade (kg/m³)")
     plt.title(f"Densidade vs Pressão - {model_name}")
 
@@ -36,7 +36,7 @@ def plot_density_vs_temperature(model_function, P, model_name):
     Gráfico densidade vs temperatura (P fixa)
     """
 
-    os.makedirs("figures", exist_ok=True)
+    os.makedirs("figures/density", exist_ok=True)
 
     temperatures = np.linspace(200, 500, 50)
     densities = []
@@ -65,7 +65,7 @@ def plot_density_vs_Z(model_density, model_Z, T, model_name):
     Gráfico densidade vs Z (variando pressão)
     """
 
-    os.makedirs("figures", exist_ok=True)
+    os.makedirs("figures/density", exist_ok=True)
 
     pressures = np.linspace(1e5, 2e7, 100)
 
@@ -103,6 +103,7 @@ def plot_density_vs_pressure_comparison(models, T):
     os.makedirs("figures/density", exist_ok=True)
 
     pressures = np.linspace(1e5, 2e7, 100)
+    pressures_MPa = pressures / 1e6
 
     plt.figure()
 
@@ -110,12 +111,12 @@ def plot_density_vs_pressure_comparison(models, T):
         densities = []
 
         for P in pressures:
-            Z = model_function(P, T)
-            densities.append(Z)
+            rho = model_function(P, T)
+            densities.append(rho)
 
-        plt.plot(pressures, densities, label=model_name)
+        plt.plot(pressures_MPa, densities, label=model_name)
 
-    plt.xlabel("Pressão (Pa)")
+    plt.xlabel("Pressão (MPa)")
     plt.ylabel("Densidade (kg/m³)")
     plt.title(f"Comparação Densidade vs Pressão (T = {T} K)")
 
@@ -139,8 +140,8 @@ def plot_density_vs_temperature_comparison(models, P):
         densities = []
 
         for T in temperatures:
-            Z = model_function(P, T)
-            densities.append(Z)
+            rho = model_function(P, T)
+            densities.append(rho)
 
         plt.plot(temperatures, densities, label=model_name)
 
